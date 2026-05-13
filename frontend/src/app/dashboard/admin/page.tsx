@@ -202,7 +202,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-
-function ShieldCheck({ className }: { className?: string }) {
-  return <div className={className}>🛡️</div>;
-}
