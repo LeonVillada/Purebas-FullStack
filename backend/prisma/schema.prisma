@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  DOCTOR
+  PATIENT
+}
+
+enum PrescriptionStatus {
+  ACTIVE
+  CONSUMED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(PATIENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctor    Doctor?
+  patient   Patient?
+}
+
+model Doctor {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id])
+  specialty     String
+  licenseNumber String   @unique
+  
+  prescriptions Prescription[]
+}
+
+model Patient {
+  id                   String   @id @default(uuid())
+  userId               String   @unique
+  user                 User     @relation(fields: [userId], references: [id])
+  dateOfBirth          DateTime
+  identificationNumber String   @unique
+
+  prescriptions Prescription[]
+}
+
+model Prescription {
+  id         String             @id @default(uuid())
+  doctorId   String
+  doctor     Doctor             @relation(fields: [doctorId], references: [id])
+  patientId  String
+  patient    Patient            @relation(fields: [patientId], references: [id])
+  notes      String?
+  status     PrescriptionStatus @default(ACTIVE)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  items      PrescriptionItem[]
+  auditLogs  AuditLog[]
+}
+
+model PrescriptionItem {
+  id             String       @id @default(uuid())
+  prescriptionId String
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  name           String
+  dosage         String
+  quantity       Int
+}
+
+model AuditLog {
+  id             String       @id @default(uuid())
+  prescriptionId String
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id])
+  action         String
+  previousStatus String?
+  newStatus      String?
+  changedBy      String
+  timestamp      DateTime     @default(now())
+}
