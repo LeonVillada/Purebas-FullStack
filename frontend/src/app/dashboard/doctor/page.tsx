@@ -17,6 +17,7 @@ interface PrescriptionItem {
 }
 
 export default function DoctorDashboard() {
+  const router = useRouter();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [prescriptions, setPrescriptions] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -28,6 +29,16 @@ export default function DoctorDashboard() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const userRaw = Cookies.get("user");
+    if (!userRaw) {
+      router.push("/login");
+      return;
+    }
+    const user = JSON.parse(userRaw);
+    if (user.role !== "DOCTOR") {
+      router.push(`/dashboard/${user.role.toLowerCase()}`);
+      return;
+    }
     fetchData();
   }, []);
 

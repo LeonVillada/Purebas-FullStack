@@ -23,11 +23,22 @@ interface Log {
 }
 
 export default function AdminDashboard() {
+  const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
   const [logs, setLogs] = useState<Log[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const userRaw = Cookies.get("user");
+    if (!userRaw) {
+      router.push("/login");
+      return;
+    }
+    const user = JSON.parse(userRaw);
+    if (user.role !== "ADMIN") {
+      router.push(`/dashboard/${user.role.toLowerCase()}`);
+      return;
+    }
     fetchData();
   }, []);
 

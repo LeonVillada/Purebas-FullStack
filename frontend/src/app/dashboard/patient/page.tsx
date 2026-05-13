@@ -1,14 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import api from "@/lib/api";
 import { Download, CheckCircle, Clock, Pill, User, FileText, Check } from "lucide-react";
 
 export default function PatientDashboard() {
+  const router = useRouter();
   const [prescriptions, setPrescriptions] = useState<any[]>([]);
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
+    const userRaw = Cookies.get("user");
+    if (!userRaw) {
+      router.push("/login");
+      return;
+    }
+    const user = JSON.parse(userRaw);
+    if (user.role !== "PATIENT") {
+      router.push(`/dashboard/${user.role.toLowerCase()}`);
+      return;
+    }
     fetchData();
   }, []);
 
