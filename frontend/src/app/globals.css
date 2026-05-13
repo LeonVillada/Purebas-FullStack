@@ -1,37 +1,31 @@
 @import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+:root {
+  --foreground-rgb: 15, 23, 42;
+  --background-start-rgb: 248, 250, 252;
+  --background-end-rgb: 255, 255, 255;
+}
 
-@layer base {
+@media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 15, 23, 42;
-    --background-start-rgb: 248, 250, 252;
-    --background-end-rgb: 255, 255, 255;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --foreground-rgb: 248, 250, 252;
-      --background-start-rgb: 2, 6, 23;
-      --background-end-rgb: 15, 23, 42;
-    }
-  }
-
-  body {
-    color: rgb(var(--foreground-rgb));
-    background: linear-gradient(
-        to bottom,
-        transparent,
-        rgb(var(--background-end-rgb))
-      )
-      rgb(var(--background-start-rgb));
-    min-height: 100vh;
+    --foreground-rgb: 248, 250, 252;
+    --background-start-rgb: 2, 6, 23;
+    --background-end-rgb: 15, 23, 42;
   }
 }
 
-/* Glassmorphism utilities */
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  min-height: 100vh;
+}
+
+/* Clases de utilidad personalizadas sin @apply para evitar errores */
 .glass-panel {
   background-color: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
@@ -50,11 +44,6 @@
   border-color: #1e293b;
 }
 
-.premium-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
 .btn-primary {
   background-color: #2563eb;
   color: white;
@@ -62,7 +51,6 @@
   border-radius: 1rem;
   font-weight: 700;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
 }
 
 .btn-primary:hover {
@@ -70,7 +58,6 @@
   transform: scale(1.02);
 }
 
-/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }

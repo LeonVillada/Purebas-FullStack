@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import api from "@/lib/api";
-import { Users, FileText, CheckCircle, Activity, TrendingUp, Users2, Calendar } from "lucide-react";
+import { Users, FileText, CheckCircle, Activity, TrendingUp, Users2, Calendar, ShieldCheck } from "lucide-react";
 
 interface Stats {
   totalUsers: number;
