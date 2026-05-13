@@ -1,13 +1,22 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { LogOut, User, Stethoscope, Activity, ShieldCheck } from "lucide-react";
 
 export default function Navbar() {
   const router = useRouter();
-  const userRaw = Cookies.get("user");
-  const user = userRaw ? JSON.parse(userRaw) : null;
+  const [user, setUser] = useState<any>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const userRaw = Cookies.get("user");
+    if (userRaw) {
+      setUser(JSON.parse(userRaw));
+    }
+    setMounted(true);
+  }, []);
 
   const handleLogout = () => {
     Cookies.remove("token");
@@ -15,7 +24,7 @@ export default function Navbar() {
     router.push("/login");
   };
 
-  if (!user) return null;
+  if (!mounted || !user) return null;
 
   const getRoleIcon = () => {
     if (user.role === "ADMIN") return <ShieldCheck className="h-5 w-5 text-purple-500" />;

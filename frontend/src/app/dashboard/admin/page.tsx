@@ -25,6 +25,7 @@ interface Log {
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [logs, setLogs] = useState<Log[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -38,11 +39,13 @@ export default function AdminDashboard() {
       ]);
       setStats(statsRes.data);
       setLogs(logsRes.data);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error fetching admin data", err);
+      setError(err.response?.data?.message || "Error al cargar datos del servidor");
     }
   };
 
+  if (error) return <div className="p-8 text-center text-red-500 font-bold">{error}</div>;
   if (!stats) return <div className="p-8 text-center text-slate-500">Cargando estadísticas...</div>;
 
   const cards = [
