@@ -20,7 +20,7 @@ export class AuditService {
       include: {
         user: { select: { email: true, role: true } },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { timestamp: 'desc' },
       take: 100,
     });
   }

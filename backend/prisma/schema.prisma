@@ -31,6 +31,7 @@ model User {
 
   doctor    Doctor?
   patient   Patient?
+  auditLogs AuditLog[]
 }
 
 model Doctor {
@@ -65,7 +66,6 @@ model Prescription {
   updatedAt  DateTime           @updatedAt
 
   items      PrescriptionItem[]
-  auditLogs  AuditLog[]
 }
 
 model PrescriptionItem {
@@ -78,12 +78,10 @@ model PrescriptionItem {
 }
 
 model AuditLog {
-  id             String       @id @default(uuid())
-  prescriptionId String
-  prescription   Prescription @relation(fields: [prescriptionId], references: [id])
-  action         String
-  previousStatus String?
-  newStatus      String?
-  changedBy      String
-  timestamp      DateTime     @default(now())
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  details   String?
+  timestamp DateTime @default(now())
 }

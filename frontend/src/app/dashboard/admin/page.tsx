@@ -18,7 +18,7 @@ interface Log {
   id: string;
   action: string;
   details: string;
-  createdAt: string;
+  timestamp: string;
   user: { email: string; role: string };
 }
 
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
                   </td>
                   <td className="px-6 py-4 text-xs font-mono text-slate-500">{log.details}</td>
                   <td className="px-6 py-4 text-xs text-slate-500">
-                    {new Date(log.createdAt).toLocaleString()}
+                    {new Date(log.timestamp).toLocaleString()}
                   </td>
                 </tr>
               ))}
