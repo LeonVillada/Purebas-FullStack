@@ -2,10 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePrescriptionDto } from './dto/create-prescription.dto';
 import { PrescriptionStatus } from '@prisma/client';
+import { AuditService } from '../audit/audit.service';
 
 @Injectable()
 export class PrescriptionsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private audit: AuditService
+  ) {}
 
   async create(doctorUserId: string, createDto: CreatePrescriptionDto) {
     const doctor = await this.prisma.doctor.findUnique({
@@ -14,7 +18,7 @@ export class PrescriptionsService {
 
     if (!doctor) throw new NotFoundException('Médico no encontrado');
 
-    return this.prisma.prescription.create({
+    const prescription = await this.prisma.prescription.create({
       data: {
         doctorId: doctor.id,
         patientId: createDto.patientId,
@@ -30,6 +34,9 @@ export class PrescriptionsService {
         },
       },
     });
+
+    await this.audit.log(doctorUserId, 'CREATE_PRESCRIPTION', `ID: ${prescription.id}`);
+    return prescription;
   }
 
   async findAllByPatient(patientUserId: string) {
@@ -70,11 +77,13 @@ export class PrescriptionsService {
     });
   }
 
-  async consume(prescriptionId: string) {
-    return this.prisma.prescription.update({
+  async consume(patientUserId: string, prescriptionId: string) {
+    const updated = await this.prisma.prescription.update({
       where: { id: prescriptionId },
       data: { status: PrescriptionStatus.CONSUMED },
     });
+    await this.audit.log(patientUserId, 'CONSUME_PRESCRIPTION', `ID: ${prescriptionId}`);
+    return updated;
   }
 
   async findOne(id: string) {

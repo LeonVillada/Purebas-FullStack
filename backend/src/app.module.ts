@@ -7,6 +7,7 @@ import { PrescriptionsModule } from './prescriptions/prescriptions.module';
 import { AdminModule } from './admin/admin.module';
 import { PdfModule } from './pdf/pdf.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { AuditModule } from './audit/audit.module';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { PrismaModule } from './prisma/prisma.module';
     UsersModule, 
     PrescriptionsModule, 
     AdminModule, 
-    PdfModule
+    PdfModule, AuditModule
   ],
   controllers: [AppController],
   providers: [AppService],

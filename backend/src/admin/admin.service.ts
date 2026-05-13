@@ -2,9 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrescriptionStatus } from '@prisma/client';
 
+import { AuditService } from '../audit/audit.service';
+
 @Injectable()
 export class AdminService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private audit: AuditService
+  ) {}
+
+  async getLogs() {
+    return this.audit.getLogs();
+  }
 
   async getStats() {
     const totalUsers = await this.prisma.user.count();

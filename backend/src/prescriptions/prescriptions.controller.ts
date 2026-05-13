@@ -32,8 +32,8 @@ export class PrescriptionsController {
 
   @Patch(':id/consume')
   @Roles(Role.PATIENT)
-  async consume(@Param('id') id: string) {
-    return this.prescriptionsService.consume(id);
+  async consume(@Request() req, @Param('id') id: string) {
+    return this.prescriptionsService.consume(req.user.id, id);
   }
 
   @Get(':id/pdf')

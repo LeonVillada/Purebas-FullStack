@@ -15,4 +15,9 @@ export class AdminController {
   async getStats() {
     return this.adminService.getStats();
   }
+
+  @Get('logs')
+  async getLogs() {
+    return this.adminService.getLogs();
+  }
 }

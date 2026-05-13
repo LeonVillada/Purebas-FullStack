@@ -14,8 +14,17 @@ interface Stats {
   prescriptionsToday: number;
 }
 
+interface Log {
+  id: string;
+  action: string;
+  details: string;
+  createdAt: string;
+  user: { email: string; role: string };
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
+  const [logs, setLogs] = useState<Log[]>([]);
 
   useEffect(() => {
     fetchData();
@@ -23,10 +32,14 @@ export default function AdminDashboard() {
 
   const fetchData = async () => {
     try {
-      const response = await api.get("/admin/stats");
-      setStats(response.data);
+      const [statsRes, logsRes] = await Promise.all([
+        api.get("/admin/stats"),
+        api.get("/admin/logs")
+      ]);
+      setStats(statsRes.data);
+      setLogs(logsRes.data);
     } catch (err) {
-      console.error("Error fetching stats", err);
+      console.error("Error fetching admin data", err);
     }
   };
 
@@ -122,6 +135,52 @@ export default function AdminDashboard() {
           <div className="absolute -right-10 -bottom-10 opacity-10">
             <ShieldCheck className="h-64 w-64" />
           </div>
+        </div>
+      </div>
+      <div className="mt-10 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <h3 className="font-bold text-lg flex items-center gap-2">
+            <Users2 className="h-5 w-5 text-purple-500" />
+            Trazabilidad del Sistema (Audit Logs)
+          </h3>
+          <span className="text-[10px] font-bold bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md uppercase tracking-widest text-slate-500">
+            Últimas 100 acciones
+          </span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 text-[10px] uppercase font-bold tracking-wider">
+                <th className="px-6 py-4">Usuario</th>
+                <th className="px-6 py-4">Acción</th>
+                <th className="px-6 py-4">Detalles</th>
+                <th className="px-6 py-4">Fecha</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              {logs.map((log) => (
+                <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-bold text-slate-900 dark:text-white">{log.user.email}</span>
+                      <span className="text-[10px] text-slate-500 uppercase">{log.user.role}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 rounded-md text-[10px] font-bold ${
+                      log.action.includes('CREATE') ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                    }`}>
+                      {log.action}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-xs font-mono text-slate-500">{log.details}</td>
+                  <td className="px-6 py-4 text-xs text-slate-500">
+                    {new Date(log.createdAt).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
